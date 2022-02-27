@@ -16,12 +16,13 @@
 
 package biz.kasual.materialnumberpicker;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.InputFilter;
 import android.util.AttributeSet;
 import android.view.View;
@@ -197,12 +198,19 @@ public class MaterialNumberPicker extends NumberPicker {
             View child = getChildAt(i);
             if (child instanceof EditText) {
                 try {
-                    Field selectorWheelPaintField = NumberPicker.class.getDeclaredField("mSelectorWheelPaint");
-                    selectorWheelPaintField.setAccessible(true);
+                    try {
+                        //noinspection JavaReflectionMemberAccess
+                        @SuppressLint("SoonBlockedPrivateApi") 
+                        Field selectorWheelPaintField = NumberPicker.class.getDeclaredField("mSelectorWheelPaint");
+                        selectorWheelPaintField.setAccessible(true);
 
-                    Paint wheelPaint = ((Paint)selectorWheelPaintField.get(this));
-                    wheelPaint.setColor(mTextColor);
-                    wheelPaint.setTextSize(mTextSize);
+                        Paint wheelPaint = ((Paint) selectorWheelPaintField.get(this));
+                        wheelPaint.setColor(mTextColor);
+                        wheelPaint.setTextSize(mTextSize);
+                    } 
+                    catch (Exception exception) {
+                        // ignore
+                    }
 
                     EditText editText = ((EditText) child);
                     editText.setTextColor(mTextColor);
@@ -211,7 +219,7 @@ public class MaterialNumberPicker extends NumberPicker {
                     invalidate();
                     break;
                 }
-                catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
+                catch (Exception e) {
                     e.printStackTrace();
                 }
             }
